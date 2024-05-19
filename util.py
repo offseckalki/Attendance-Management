@@ -12,8 +12,6 @@ def init_db(db_path):
     conn.commit()
     conn.close()
 
-
-
 def add_user_to_db(db_path, name, course, batch, encoding):
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
@@ -55,7 +53,7 @@ def get_button(window, text, color, command, fg='white'):
 
 def get_img_label(window):
     label = tk.Label(window)
-    label.grid(row=0, column=0)
+    label.pack()  # Changed from grid to pack
     return label
 
 def get_text_label(window, text):

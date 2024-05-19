@@ -10,20 +10,26 @@ class App:
     def __init__(self):
         self.main_window = tk.Tk()
         self.main_window.geometry("1200x600+350+100")
+        self.main_window.title("Attendance Management System")
+        self.main_window.configure(bg="#e1e1e1")
 
-        self.main_window.title("Meerut Institute of Technology")
+        title_label = tk.Label(self.main_window, text="Attendance Management System", font=("Helvetica", 28, "bold"), bg="#4CAF50", fg="#ffffff", padx=20, pady=10)
+        title_label.pack(pady=20)
 
-        self.login_button_main_window = util.get_button(self.main_window, 'Mark Attendance', 'green', self.login)
-        self.login_button_main_window.place(x=750, y=200)
+        button_frame = tk.Frame(self.main_window, bg="#e1e1e1")
+        button_frame.pack(pady=50)
 
-        self.logout_button_main_window = util.get_button(self.main_window, 'Early Dismissal', 'red', self.logout)
-        self.logout_button_main_window.place(x=750, y=300)
+        self.login_button = util.get_button(button_frame, 'Mark Attendance', '#4CAF50', self.login)
+        self.login_button.pack(side=tk.LEFT, padx=20, pady=10)
 
-        self.register_new_user_button_main_window = util.get_button(self.main_window, 'Register new user', 'gray', self.register_new_user, fg='black')
-        self.register_new_user_button_main_window.place(x=750, y=400)
+        self.logout_button = util.get_button(button_frame, 'Early Dismissal', '#FF5733', self.logout)
+        self.logout_button.pack(side=tk.LEFT, padx=20, pady=10)
+
+        self.register_button = util.get_button(button_frame, 'Register new user', '#808080', self.register_new_user, fg='black')
+        self.register_button.pack(side=tk.LEFT, padx=20, pady=10)
 
         self.webcam_label = util.get_img_label(self.main_window)
-        self.webcam_label.place(x=10, y=0, width=700, height=500)
+        self.webcam_label.pack(pady=20)
 
         self.add_webcam(self.webcam_label)
 
@@ -86,35 +92,46 @@ class App:
     def register_new_user(self):
         self.register_new_user_window = tk.Toplevel(self.main_window)
         self.register_new_user_window.geometry("1200x600+370+120")
+        self.register_new_user_window.title("Register New User")
+        self.register_new_user_window.configure(bg="#e1e1e1")
+
+        title_label = tk.Label(self.register_new_user_window, text="Register New User", font=("Helvetica", 24, "bold"), bg="#4CAF50", fg="#ffffff", padx=20, pady=10)
+        title_label.pack(pady=20)
 
         self.capture_label = util.get_img_label(self.register_new_user_window)
-        self.capture_label.place(x=10, y=0, width=700, height=500)
+        self.capture_label.pack(pady=20)
 
         self.add_img_to_label(self.capture_label)
 
-        self.text_label_register_new_user = util.get_text_label(self.register_new_user_window, 'Please, Enter username:')
-        self.text_label_register_new_user.place(x=750, y=20)
+        form_frame = tk.Frame(self.register_new_user_window, bg="#e1e1e1")
+        form_frame.pack(pady=20)
 
-        self.entry_text_register_new_user = util.get_entry_text(self.register_new_user_window)
-        self.entry_text_register_new_user.place(x=750, y=70)
+        username_label = util.get_text_label(form_frame, 'Please, Enter username:')
+        username_label.grid(row=0, column=0, padx=10, pady=10, sticky="e")
 
-        self.text_label_course = util.get_text_label(self.register_new_user_window, 'Please, Enter Course/Department:')
-        self.text_label_course.place(x=750, y=140)
+        self.entry_text_register_new_user = util.get_entry_text(form_frame)
+        self.entry_text_register_new_user.grid(row=0, column=1, padx=10, pady=10, sticky="w")
 
-        self.entry_text_course = util.get_entry_text(self.register_new_user_window)
-        self.entry_text_course.place(x=750, y=190)
+        course_label = util.get_text_label(form_frame, 'Please, Enter Course/Department:')
+        course_label.grid(row=1, column=0, padx=10, pady=10, sticky="e")
 
-        self.text_label_batch = util.get_text_label(self.register_new_user_window, 'Please, Enter Batch/Year:')
-        self.text_label_batch.place(x=750, y=260)
+        self.entry_text_course = util.get_entry_text(form_frame)
+        self.entry_text_course.grid(row=1, column=1, padx=10, pady=10, sticky="w")
 
-        self.entry_text_batch = util.get_entry_text(self.register_new_user_window)
-        self.entry_text_batch.place(x=750, y=310)
+        batch_label = util.get_text_label(form_frame, 'Please, Enter Batch/Year:')
+        batch_label.grid(row=2, column=0, padx=10, pady=10, sticky="e")
 
-        self.accept_button_register_new_user_window = util.get_button(self.register_new_user_window, 'Accept', 'green', self.accept_register_new_user)
-        self.accept_button_register_new_user_window.place(x=750, y=380)
+        self.entry_text_batch = util.get_entry_text(form_frame)
+        self.entry_text_batch.grid(row=2, column=1, padx=10, pady=10, sticky="w")
 
-        self.try_again_button_register_new_user_window = util.get_button(self.register_new_user_window, 'Try again', 'red', self.try_again_register_new_user)
-        self.try_again_button_register_new_user_window.place(x=750, y=450)
+        button_frame = tk.Frame(self.register_new_user_window, bg="#e1e1e1")
+        button_frame.pack(pady=20)
+
+        accept_button = util.get_button(button_frame, 'Accept', '#4CAF50', self.accept_register_new_user)
+        accept_button.pack(side=tk.LEFT, padx=20, pady=10)
+
+        try_again_button = util.get_button(button_frame, 'Try again', '#FF5733', self.try_again_register_new_user)
+        try_again_button.pack(side=tk.LEFT, padx=20, pady=10)
 
     def try_again_register_new_user(self):
         self.register_new_user_window.destroy()
@@ -139,7 +156,7 @@ class App:
             return
 
         util.add_user_to_db(self.db_path, name, course, batch, embeddings[0])
-        util.msg_box('Success!', 'User was registered successfully!')
+        util.msg_box('Success', 'User registered successfully.')
         self.register_new_user_window.destroy()
 
 if __name__ == "__main__":
