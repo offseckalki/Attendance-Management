@@ -11,16 +11,15 @@ class App:
         self.main_window = tk.Tk()
         self.main_window.geometry("1200x600+350+100")
 
-        self.header = tk.Label(self.main_window, text="Meerut Institute of Technology", font=("Helvetica", 24))
-        self.header.pack(pady=20)
+        self.main_window.title("Meerut Institute of Technology")
 
-        self.login_button_main_window = util.get_button(self.main_window, 'login', 'green', self.login)
+        self.login_button_main_window = util.get_button(self.main_window, 'Mark Attendance', 'green', self.login)
         self.login_button_main_window.place(x=750, y=200)
 
-        self.logout_button_main_window = util.get_button(self.main_window, 'logout', 'red', self.logout)
+        self.logout_button_main_window = util.get_button(self.main_window, 'Early Dismissal', 'red', self.logout)
         self.logout_button_main_window.place(x=750, y=300)
 
-        self.register_new_user_button_main_window = util.get_button(self.main_window, 'register new user', 'gray', self.register_new_user, fg='black')
+        self.register_new_user_button_main_window = util.get_button(self.main_window, 'Register new user', 'gray', self.register_new_user, fg='black')
         self.register_new_user_button_main_window.place(x=750, y=400)
 
         self.webcam_label = util.get_img_label(self.main_window)
@@ -93,19 +92,19 @@ class App:
 
         self.add_img_to_label(self.capture_label)
 
-        self.text_label_register_new_user = util.get_text_label(self.register_new_user_window, 'Please, input username:')
+        self.text_label_register_new_user = util.get_text_label(self.register_new_user_window, 'Please, Enter username:')
         self.text_label_register_new_user.place(x=750, y=20)
 
         self.entry_text_register_new_user = util.get_entry_text(self.register_new_user_window)
         self.entry_text_register_new_user.place(x=750, y=70)
 
-        self.text_label_course = util.get_text_label(self.register_new_user_window, 'Please, input course:')
+        self.text_label_course = util.get_text_label(self.register_new_user_window, 'Please, Enter Course/Department:')
         self.text_label_course.place(x=750, y=140)
 
         self.entry_text_course = util.get_entry_text(self.register_new_user_window)
         self.entry_text_course.place(x=750, y=190)
 
-        self.text_label_batch = util.get_text_label(self.register_new_user_window, 'Please, input batch:')
+        self.text_label_batch = util.get_text_label(self.register_new_user_window, 'Please, Enter Batch/Year:')
         self.text_label_batch.place(x=750, y=260)
 
         self.entry_text_batch = util.get_entry_text(self.register_new_user_window)
