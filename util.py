@@ -7,14 +7,21 @@ import face_recognition
 def init_db(db_path):
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS users (name TEXT PRIMARY KEY, encoding BLOB)''')
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            name TEXT PRIMARY KEY,
+            course TEXT,
+            batch TEXT,
+            encoding BLOB
+        )
+    ''')
     conn.commit()
     conn.close()
 
-def add_user_to_db(db_path, name, encoding):
+def add_user_to_db(db_path, name, course, batch, encoding):
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
-    c.execute("INSERT INTO users (name, encoding) VALUES (?, ?)", (name, encoding.tobytes()))
+    c.execute("INSERT INTO users (name, course, batch, encoding) VALUES (?, ?, ?, ?)", (name, course, batch, encoding.tobytes()))
     conn.commit()
     conn.close()
 
@@ -27,7 +34,7 @@ def get_user_from_db(db_path, unknown_encoding):
 
     for user in users:
         name, encoding = user
-        known_encoding = face_recognition.face_encodings([encoding])[0]
+        known_encoding = pickle.loads(encoding)
         match = face_recognition.compare_faces([known_encoding], unknown_encoding)[0]
         if match:
             return name
@@ -51,8 +58,9 @@ def get_button(window, text, color, command, fg='white'):
 
 def get_img_label(window):
     label = tk.Label(window)
-    label.grid(row=0, column=0)
+    label.pack()
     return label
+
 
 def get_text_label(window, text):
     label = tk.Label(window, text=text)
@@ -60,7 +68,7 @@ def get_text_label(window, text):
     return label
 
 def get_entry_text(window):
-    inputtxt = tk.Text(window, height=2, width=15, font=("Arial", 32))
+    inputtxt = tk.Text(window, height=2, width=20, font=("Arial", 16))
     return inputtxt
 
 def msg_box(title, description):

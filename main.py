@@ -9,7 +9,10 @@ import util
 class App:
     def __init__(self):
         self.main_window = tk.Tk()
-        self.main_window.geometry("1200x520+350+100")
+        self.main_window.geometry("1200x600+350+100")
+
+        self.header = tk.Label(self.main_window, text="Meerut Institute of Technology", font=("Helvetica", 24))
+        self.header.pack(pady=20)
 
         self.login_button_main_window = util.get_button(self.main_window, 'login', 'green', self.login)
         self.login_button_main_window.place(x=750, y=200)
@@ -83,24 +86,36 @@ class App:
 
     def register_new_user(self):
         self.register_new_user_window = tk.Toplevel(self.main_window)
-        self.register_new_user_window.geometry("1200x520+370+120")
-
-        self.accept_button_register_new_user_window = util.get_button(self.register_new_user_window, 'Accept', 'green', self.accept_register_new_user)
-        self.accept_button_register_new_user_window.place(x=750, y=300)
-
-        self.try_again_button_register_new_user_window = util.get_button(self.register_new_user_window, 'Try again', 'red', self.try_again_register_new_user)
-        self.try_again_button_register_new_user_window.place(x=750, y=400)
+        self.register_new_user_window.geometry("1200x600+370+120")
 
         self.capture_label = util.get_img_label(self.register_new_user_window)
         self.capture_label.place(x=10, y=0, width=700, height=500)
 
         self.add_img_to_label(self.capture_label)
 
-        self.entry_text_register_new_user = util.get_entry_text(self.register_new_user_window)
-        self.entry_text_register_new_user.place(x=750, y=150)
+        self.text_label_register_new_user = util.get_text_label(self.register_new_user_window, 'Please, input username:')
+        self.text_label_register_new_user.place(x=750, y=20)
 
-        self.text_label_register_new_user = util.get_text_label(self.register_new_user_window, 'Please, \ninput username:')
-        self.text_label_register_new_user.place(x=750, y=70)
+        self.entry_text_register_new_user = util.get_entry_text(self.register_new_user_window)
+        self.entry_text_register_new_user.place(x=750, y=70)
+
+        self.text_label_course = util.get_text_label(self.register_new_user_window, 'Please, input course:')
+        self.text_label_course.place(x=750, y=140)
+
+        self.entry_text_course = util.get_entry_text(self.register_new_user_window)
+        self.entry_text_course.place(x=750, y=190)
+
+        self.text_label_batch = util.get_text_label(self.register_new_user_window, 'Please, input batch:')
+        self.text_label_batch.place(x=750, y=260)
+
+        self.entry_text_batch = util.get_entry_text(self.register_new_user_window)
+        self.entry_text_batch.place(x=750, y=310)
+
+        self.accept_button_register_new_user_window = util.get_button(self.register_new_user_window, 'Accept', 'green', self.accept_register_new_user)
+        self.accept_button_register_new_user_window.place(x=750, y=380)
+
+        self.try_again_button_register_new_user_window = util.get_button(self.register_new_user_window, 'Try again', 'red', self.try_again_register_new_user)
+        self.try_again_button_register_new_user_window.place(x=750, y=450)
 
     def try_again_register_new_user(self):
         self.register_new_user_window.destroy()
@@ -116,12 +131,15 @@ class App:
 
     def accept_register_new_user(self):
         name = self.entry_text_register_new_user.get(1.0, "end-1c")
+        course = self.entry_text_course.get(1.0, "end-1c")
+        batch = self.entry_text_batch.get(1.0, "end-1c")
+
         embeddings = face_recognition.face_encodings(self.register_new_user_capture)
         if not embeddings:
             util.msg_box('Error', 'No face found. Please try again.')
             return
 
-        util.add_user_to_db(self.db_path, name, embeddings[0])
+        util.add_user_to_db(self.db_path, name, course, batch, embeddings[0])
         util.msg_box('Success!', 'User was registered successfully!')
         self.register_new_user_window.destroy()
 
