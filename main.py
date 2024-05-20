@@ -13,7 +13,7 @@ class App:
         self.main_window.title("Attendance Management System")
         self.main_window.configure(bg="#e1e1e1")
 
-        title_label = tk.Label(self.main_window, text="Attendance Management System", font=("Helvetica", 28, "bold"), bg="#4CAF50", fg="#ffffff", padx=20, pady=10)
+        title_label = tk.Label(self.main_window, text="MEERUT INSTITUTE OF TECHNOLOGY", font=("Helvetica", 28, "bold"), bg="#FF4242", fg="#FFFFFF", padx=20, pady=10)
         title_label.pack(pady=20)
 
         button_frame = tk.Frame(self.main_window, bg="#e1e1e1")
