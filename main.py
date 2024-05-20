@@ -1,3 +1,5 @@
+# main.py
+
 import os
 import datetime
 import cv2
@@ -5,13 +7,14 @@ import tkinter as tk
 from PIL import Image, ImageTk
 import face_recognition
 import util
+import time
 
 class App:
     def __init__(self):
         self.main_window = tk.Tk()
         self.main_window.geometry("1200x600+350+100")
         self.main_window.title("Attendance Management System")
-        self.main_window.configure(bg="#e1e1e1")
+        self.main_window.configure(bg="#6240b9")
 
         # Load and display the logo
         logo_image = Image.open("logo.png")  # Ensure this path is correct
@@ -20,7 +23,7 @@ class App:
         logo_label = tk.Label(self.main_window, image=self.logo, bg="#e1e1e1")
         logo_label.pack(pady=20)
 
-        title_label = tk.Label(self.main_window, text="MEERUT INSTITUTE OF TECHNOLOGY", font=("Helvetica", 28, "bold"), bg="#FF4242", fg="#FFFFFF", padx=20, pady=10)
+        title_label = tk.Label(self.main_window, text="MEERUT INSTITUTE OF TECHNOLOGY\n (Attendance Management System) ", font=("Helvetica", 28, "bold"), bg="#FF4242", fg="#FFFFFF", padx=20, pady=10)
         title_label.pack(pady=20)
 
         button_frame = tk.Frame(self.main_window, bg="#e1e1e1")
@@ -38,6 +41,10 @@ class App:
         self.attendance_button = util.get_button(button_frame, 'Attendance Percentage', '#008CBA', self.show_attendance_percentage)
         self.attendance_button.pack(side=tk.LEFT, padx=20, pady=10)
 
+        # Add the auto detection button
+        self.auto_button = util.get_button(button_frame, 'Auto', '#FFD700', self.auto_recognition)
+        self.auto_button.pack(side=tk.LEFT, padx=20, pady=10)
+
         self.webcam_label = util.get_img_label(self.main_window)
         self.webcam_label.pack(pady=20)
 
@@ -46,6 +53,9 @@ class App:
         self.db_path = './users.db'
         util.init_db(self.db_path)
         self.log_path = './log.txt'
+
+        # Add a flag to control auto recognition
+        self.auto_recognition_enabled = False
 
     def add_webcam(self, label):
         if 'cap' not in self.__dict__:
@@ -200,6 +210,34 @@ class App:
         attendance_data = util.calculate_attendance_percentage(self.log_path)
         attendance_message = "\n".join([f"{name}: {percentage:.2f}%" for name, percentage in attendance_data.items()])
         util.msg_box('Attendance Percentage', attendance_message)
+
+    def auto_recognition(self):
+        # Toggle the auto recognition mode
+        self.auto_recognition_enabled = not self.auto_recognition_enabled
+        if self.auto_recognition_enabled:
+            self.auto_button.config(text="Stop Auto")
+            self.start_auto_recognition()
+        else:
+            self.auto_button.config(text="Auto")
+
+    def start_auto_recognition(self):
+        if self.auto_recognition_enabled:
+            ret, frame = self.cap.read()
+            if not ret:
+                print("Failed to capture image from webcam")
+                self._label.after(20, self.start_auto_recognition)
+                return
+
+            embeddings_unknown = face_recognition.face_encodings(frame)
+            if embeddings_unknown:
+                name = util.get_user_from_db(self.db_path, embeddings_unknown[0])
+                if name != 'unknown_person' and util.can_mark_attendance(self.log_path, name):
+                    with open(self.log_path, 'a') as f:
+                        f.write(f'{name},{datetime.datetime.now()},in\n')
+                    util.msg_box('Attendance Marked', f'Attendance marked for {name}.')
+
+            # Continue scanning
+            self._label.after(2000, self.start_auto_recognition)
 
 if __name__ == "__main__":
     app = App()

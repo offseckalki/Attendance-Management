@@ -1,3 +1,5 @@
+# util.py
+
 import tkinter as tk
 from tkinter import messagebox
 import sqlite3
@@ -58,15 +60,13 @@ def get_user_from_db(db_path, unknown_encoding):
 def can_mark_attendance(log_path, name):
     if not os.path.exists(log_path):
         return True
-    
-    with open(log_path, 'r') as f:
-        lines = f.readlines()
-    
+
     today = datetime.datetime.now().date()
-    for line in lines:
-        logged_name, timestamp, _ = line.strip().split(',')
-        if logged_name == name and datetime.datetime.fromisoformat(timestamp).date() == today:
-            return False
+    with open(log_path, 'r') as f:
+        for line in f:
+            logged_name, timestamp, status = line.strip().split(',')
+            if logged_name == name and datetime.datetime.fromisoformat(timestamp).date() == today and status == 'in':
+                return False
     return True
 
 def calculate_attendance_percentage(log_path):
