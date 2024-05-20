@@ -35,6 +35,9 @@ class App:
         self.register_button = util.get_button(button_frame, 'Register new user', '#808080', self.register_new_user, fg='black')
         self.register_button.pack(side=tk.LEFT, padx=20, pady=10)
 
+        self.attendance_button = util.get_button(button_frame, 'Attendance Percentage', '#008CBA', self.show_attendance_percentage)
+        self.attendance_button.pack(side=tk.LEFT, padx=20, pady=10)
+
         self.webcam_label = util.get_img_label(self.main_window)
         self.webcam_label.pack(pady=20)
 
@@ -78,9 +81,12 @@ class App:
         if name == 'unknown_person':
             util.msg_box('Ups...', 'Unknown user. Please register new user or try again.')
         else:
-            util.msg_box('Welcome back!', f'Welcome, {name}.')
-            with open(self.log_path, 'a') as f:
-                f.write(f'{name},{datetime.datetime.now()},in\n')
+            if util.can_mark_attendance(self.log_path, name):
+                util.msg_box('Welcome back!', f'Welcome, {name}.')
+                with open(self.log_path, 'a') as f:
+                    f.write(f'{name},{datetime.datetime.now()},in\n')
+            else:
+                util.msg_box('Info', 'Attendance already marked for today.')
 
     def logout(self):
         embeddings_unknown = face_recognition.face_encodings(self.most_recent_capture_arr)
@@ -189,6 +195,11 @@ class App:
         util.add_user_to_db(self.db_path, name, course, batch, embeddings[0])
         util.msg_box('Success', 'User registered successfully.')
         self.register_new_user_window.destroy()
+
+    def show_attendance_percentage(self):
+        attendance_data = util.calculate_attendance_percentage(self.log_path)
+        attendance_message = "\n".join([f"{name}: {percentage:.2f}%" for name, percentage in attendance_data.items()])
+        util.msg_box('Attendance Percentage', attendance_message)
 
 if __name__ == "__main__":
     app = App()

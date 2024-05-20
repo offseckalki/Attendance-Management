@@ -3,6 +3,8 @@ from tkinter import messagebox
 import sqlite3
 import numpy as np
 import face_recognition
+import datetime
+import os
 
 def get_button(frame, text, bg, command, fg='white'):
     return tk.Button(frame, text=text, bg=bg, fg=fg, font=("Helvetica", 12), command=command, width=20, height=2)
@@ -52,3 +54,36 @@ def get_user_from_db(db_path, unknown_encoding):
         if results[0]:
             return name
     return 'unknown_person'
+
+def can_mark_attendance(log_path, name):
+    if not os.path.exists(log_path):
+        return True
+    
+    with open(log_path, 'r') as f:
+        lines = f.readlines()
+    
+    today = datetime.datetime.now().date()
+    for line in lines:
+        logged_name, timestamp, _ = line.strip().split(',')
+        if logged_name == name and datetime.datetime.fromisoformat(timestamp).date() == today:
+            return False
+    return True
+
+def calculate_attendance_percentage(log_path):
+    if not os.path.exists(log_path):
+        return {}
+
+    with open(log_path, 'r') as f:
+        lines = f.readlines()
+    
+    attendance_counts = {}
+    total_days = (datetime.datetime.now() - datetime.datetime.strptime(lines[0].split(',')[1], '%Y-%m-%d %H:%M:%S.%f')).days + 1
+    for line in lines:
+        name, timestamp, status = line.strip().split(',')
+        if status == 'in':
+            if name not in attendance_counts:
+                attendance_counts[name] = set()
+            attendance_counts[name].add(datetime.datetime.fromisoformat(timestamp).date())
+    
+    attendance_percentage = {name: (len(days) / total_days) * 100 for name, days in attendance_counts.items()}
+    return attendance_percentage
