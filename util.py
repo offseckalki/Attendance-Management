@@ -1,22 +1,40 @@
-import os
-import sqlite3
 import tkinter as tk
 from tkinter import messagebox
+import sqlite3
+import numpy as np
 import face_recognition
-import pickle
+
+def get_button(frame, text, bg, command, fg='white'):
+    return tk.Button(frame, text=text, bg=bg, fg=fg, font=("Helvetica", 12), command=command, width=20, height=2)
+
+def get_text_label(frame, text):
+    return tk.Label(frame, text=text, bg="#e1e1e1", font=("Helvetica", 14))
+
+def get_entry_text(frame):
+    return tk.Text(frame, height=1, width=30, font=("Helvetica", 14))
+
+def get_img_label(frame):
+    label = tk.Label(frame)
+    label.pack(pady=20)
+    return label
+
+def msg_box(title, message):
+    messagebox.showinfo(title, message)
 
 def init_db(db_path):
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS users (name TEXT PRIMARY KEY, course TEXT, batch TEXT, encoding BLOB)''')
+    c.execute('''CREATE TABLE IF NOT EXISTS users
+                 (name TEXT, course TEXT, batch TEXT, encoding BLOB)''')
     conn.commit()
     conn.close()
 
 def add_user_to_db(db_path, name, course, batch, encoding):
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
-    encoding_pickled = pickle.dumps(encoding)
-    c.execute("INSERT INTO users (name, course, batch, encoding) VALUES (?, ?, ?, ?)", (name, course, batch, encoding_pickled))
+    encoding_blob = np.array(encoding, dtype=np.float64).tobytes()  # Ensure proper dtype and conversion to bytes
+    c.execute("INSERT INTO users (name, course, batch, encoding) VALUES (?, ?, ?, ?)", 
+              (name, course, batch, sqlite3.Binary(encoding_blob)))
     conn.commit()
     conn.close()
 
@@ -26,44 +44,11 @@ def get_user_from_db(db_path, unknown_encoding):
     c.execute("SELECT name, encoding FROM users")
     users = c.fetchall()
     conn.close()
-
+    
     for user in users:
-        name, encoding_pickled = user
-        known_encoding = pickle.loads(encoding_pickled)
-        match = face_recognition.compare_faces([known_encoding], unknown_encoding)[0]
-        if match:
+        name, encoding_blob = user
+        known_encoding = np.frombuffer(encoding_blob, dtype=np.float64)  # Ensure proper dtype conversion
+        results = face_recognition.compare_faces([known_encoding], unknown_encoding)
+        if results[0]:
             return name
-
     return 'unknown_person'
-
-def get_button(window, text, color, command, fg='white'):
-    button = tk.Button(
-        window,
-        text=text,
-        activebackground="black",
-        activeforeground="white",
-        fg=fg,
-        bg=color,
-        command=command,
-        height=2,
-        width=20,
-        font=('Helvetica bold', 20)
-    )
-    return button
-
-def get_img_label(window):
-    label = tk.Label(window)
-    label.pack()  # Changed from grid to pack
-    return label
-
-def get_text_label(window, text):
-    label = tk.Label(window, text=text)
-    label.config(font=("sans-serif", 21), justify="left")
-    return label
-
-def get_entry_text(window):
-    inputtxt = tk.Text(window, height=2, width=15, font=("Arial", 32))
-    return inputtxt
-
-def msg_box(title, description):
-    messagebox.showinfo(title, description)

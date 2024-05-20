@@ -13,6 +13,13 @@ class App:
         self.main_window.title("Attendance Management System")
         self.main_window.configure(bg="#e1e1e1")
 
+        # Load and display the logo
+        logo_image = Image.open("logo.png")  # Ensure this path is correct
+        logo_image = logo_image.resize((150, 150), Image.LANCZOS)  # Adjust size as needed
+        self.logo = ImageTk.PhotoImage(logo_image)
+        logo_label = tk.Label(self.main_window, image=self.logo, bg="#e1e1e1")
+        logo_label.pack(pady=20)
+
         title_label = tk.Label(self.main_window, text="MEERUT INSTITUTE OF TECHNOLOGY", font=("Helvetica", 28, "bold"), bg="#FF4242", fg="#FFFFFF", padx=20, pady=10)
         title_label.pack(pady=20)
 
@@ -91,19 +98,43 @@ class App:
 
     def register_new_user(self):
         self.register_new_user_window = tk.Toplevel(self.main_window)
-        self.register_new_user_window.geometry("1200x600+370+120")
+        self.register_new_user_window.geometry("800x600+370+120")
         self.register_new_user_window.title("Register New User")
         self.register_new_user_window.configure(bg="#e1e1e1")
 
         title_label = tk.Label(self.register_new_user_window, text="Register New User", font=("Helvetica", 24, "bold"), bg="#4CAF50", fg="#ffffff", padx=20, pady=10)
         title_label.pack(pady=20)
 
-        self.capture_label = util.get_img_label(self.register_new_user_window)
+        # Create a frame for the canvas and scrollbar
+        frame = tk.Frame(self.register_new_user_window, bg="#e1e1e1")
+        frame.pack(fill=tk.BOTH, expand=True)
+
+        # Create a canvas and add a scrollbar to it
+        canvas = tk.Canvas(frame, bg="#e1e1e1")
+        scrollbar = tk.Scrollbar(frame, orient=tk.VERTICAL, command=canvas.yview)
+        scrollable_frame = tk.Frame(canvas, bg="#e1e1e1")
+
+        # Configure the scrollable frame
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(
+                scrollregion=canvas.bbox("all")
+            )
+        )
+
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        # Pack the canvas and scrollbar
+        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self.capture_label = util.get_img_label(scrollable_frame)
         self.capture_label.pack(pady=20)
 
         self.add_img_to_label(self.capture_label)
 
-        form_frame = tk.Frame(self.register_new_user_window, bg="#e1e1e1")
+        form_frame = tk.Frame(scrollable_frame, bg="#e1e1e1")
         form_frame.pack(pady=20)
 
         username_label = util.get_text_label(form_frame, 'Please, Enter username:')
@@ -124,7 +155,7 @@ class App:
         self.entry_text_batch = util.get_entry_text(form_frame)
         self.entry_text_batch.grid(row=2, column=1, padx=10, pady=10, sticky="w")
 
-        button_frame = tk.Frame(self.register_new_user_window, bg="#e1e1e1")
+        button_frame = tk.Frame(scrollable_frame, bg="#e1e1e1")
         button_frame.pack(pady=20)
 
         accept_button = util.get_button(button_frame, 'Accept', '#4CAF50', self.accept_register_new_user)
