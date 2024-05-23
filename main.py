@@ -42,7 +42,7 @@ class App:
         self.attendance_button.pack(side=tk.LEFT, padx=20, pady=10)
 
         # Add the auto detection button
-        self.auto_button = util.get_button(button_frame, 'Auto', '#FFD700', self.auto_recognition)
+        self.auto_button = util.get_button(button_frame, 'Auto', '#000000', self.auto_recognition)
         self.auto_button.pack(side=tk.LEFT, padx=20, pady=10)
 
         self.webcam_label = util.get_img_label(self.main_window)
